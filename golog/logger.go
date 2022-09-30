@@ -15,6 +15,10 @@ func initGologLogger()(logger.Logger){
 	return &GologWrapper{golog.Default}
 }
 
+func New()(logger.Logger){
+	return &GologWrapper{golog.New()}
+}
+
 type GologWrapper struct{
 	*golog.Logger
 }
@@ -32,7 +36,7 @@ func (l *GologWrapper)Level()(logger.Level){
 }
 
 func (l *GologWrapper)SetOutput(w io.Writer){
-	l.Logger = l.Logger.SetOutput(w)
+	l.Logger.SetOutput(w)
 }
 
 func (l *GologWrapper)Trace(v ...any){

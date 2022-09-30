@@ -12,6 +12,10 @@ func initLogrusLogger()(logger.Logger){
 	return &LogrusWrapper{logrus.StandardLogger()}
 }
 
+func New()(logger.Logger){
+	return &LogrusWrapper{logrus.New()}
+}
+
 type LogrusWrapper struct{
 	*logrus.Logger
 }
