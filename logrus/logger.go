@@ -8,20 +8,18 @@ import (
 
 var Logger = initLogrusLogger()
 
-func initLogrusLogger()(logger.Logger){
-	return &LogrusWrapper{logrus.StandardLogger()}
-}
-
-func New()(logger.Logger){
-	return &LogrusWrapper{logrus.New()}
-}
-
 type LogrusWrapper struct{
 	*logrus.Logger
 }
 
-func (l *LogrusWrapper)Unwrap()(*logrus.Logger){
-	return l.Logger
+var _ logger.Logger = (*LoggerWrapper)(nil)
+
+func initLogrusLogger()(*LogrusWrapper){
+	return &LogrusWrapper{logrus.StandardLogger()}
+}
+
+func New()(*LogrusWrapper){
+	return &LogrusWrapper{logrus.New()}
 }
 
 func (l *LogrusWrapper)SetLevel(lvl logger.Level){

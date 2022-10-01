@@ -10,11 +10,11 @@ import (
 
 var Logger = initStdLogger()
 
-func initStdLogger()(logger.Logger){
+func initStdLogger()(*logger.LoggerWrapper){
 	return logger.WrapLogger(log.Default())
 }
 
-func New()(logger.Logger){
+func New()(*logger.LoggerWrapper){
 	return logger.WrapLogger(log.New(os.Stderr, "", log.LstdFlags))
 }
 

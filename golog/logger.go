@@ -11,20 +11,18 @@ import (
 
 var Logger = initGologLogger()
 
-func initGologLogger()(logger.Logger){
-	return &GologWrapper{golog.Default}
-}
-
-func New()(logger.Logger){
-	return &GologWrapper{golog.New()}
-}
-
 type GologWrapper struct{
 	*golog.Logger
 }
 
-func (l *GologWrapper)Unwrap()(*golog.Logger){
-	return l.Logger
+var _ logger.Logger = (*GologWrapper)(nil)
+
+func initGologLogger()(*GologWrapper){
+	return &GologWrapper{golog.Default}
+}
+
+func New()(*GologWrapper){
+	return &GologWrapper{golog.New()}
 }
 
 func (l *GologWrapper)SetLevel(lvl logger.Level){
