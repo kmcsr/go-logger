@@ -1,5 +1,5 @@
 
-package std_logger
+package stdlog
 
 import (
 	"os"

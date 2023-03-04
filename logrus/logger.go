@@ -1,5 +1,5 @@
 
-package logrus_logger
+package logrus
 
 import (
 	"github.com/sirupsen/logrus"
@@ -12,7 +12,7 @@ type LogrusWrapper struct{
 	*logrus.Logger
 }
 
-var _ logger.Logger = (*LoggerWrapper)(nil)
+var _ logger.Logger = (*LogrusWrapper)(nil)
 
 func initLogrusLogger()(*LogrusWrapper){
 	return &LogrusWrapper{logrus.StandardLogger()}

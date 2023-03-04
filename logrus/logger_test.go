@@ -1,15 +1,15 @@
 
-package logrus_logger_test
+package logrus_test
 
 import (
 	"testing"
 
 	_ "github.com/sirupsen/logrus"
 	"github.com/kmcsr/go-logger"
-	logrusl "github.com/kmcsr/go-logger/logrus"
+	"github.com/kmcsr/go-logger/logrus"
 )
 
-var LogrusLogger logger.Logger = logrusl.Logger
+var LogrusLogger logger.Logger = logrus.Logger
 
 func TestLogrusLogger(t *testing.T){
 	LogrusLogger.SetLevel(logger.TraceLevel)

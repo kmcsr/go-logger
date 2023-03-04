@@ -1,5 +1,5 @@
 
-package golog_logger
+package golog
 
 import (
 	"fmt"

@@ -1,15 +1,15 @@
 
-package golog_logger_test
+package golog_test
 
 import (
 	"testing"
 
 	_ "github.com/kataras/golog"
 	"github.com/kmcsr/go-logger"
-	gologl "github.com/kmcsr/go-logger/golog"
+	"github.com/kmcsr/go-logger/golog"
 )
 
-var GologLogger logger.Logger = gologl.Logger
+var GologLogger logger.Logger = golog.Logger
 
 func TestGologLogger(t *testing.T){
 	GologLogger.SetLevel(logger.TraceLevel)

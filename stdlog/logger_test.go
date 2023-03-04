@@ -1,14 +1,14 @@
 
-package std_logger_test
+package stdlog_test
 
 import (
 	"testing"
 
 	"github.com/kmcsr/go-logger"
-	stdl "github.com/kmcsr/go-logger/std"
+	"github.com/kmcsr/go-logger/stdlog"
 )
 
-var StdLogger logger.Logger = stdl.Logger
+var StdLogger logger.Logger = stdlog.Logger
 
 func TestStdLogger(t *testing.T){
 	StdLogger.SetLevel(logger.TraceLevel)
