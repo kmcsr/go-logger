@@ -6,10 +6,16 @@ import (
 	"github.com/kmcsr/go-logger"
 )
 
+type Fields = logrus.Fields
+
 var Logger = initLogrusLogger()
 
 type LogrusWrapper struct{
 	*logrus.Logger
+}
+
+type LogrusEntry struct{
+	*logrus.Entry
 }
 
 var _ logger.Logger = (*LogrusWrapper)(nil)
@@ -28,6 +34,14 @@ func (l *LogrusWrapper)SetLevel(lvl logger.Level){
 
 func (l *LogrusWrapper)Level()(logger.Level){
 	return logrus2level(l.Logger.GetLevel())
+}
+
+func (l *LogrusWrapper)WithFields(fields Fields)(*LogrusEntry){
+	return &LogrusEntry{l.Logger.WithFields(fields)}
+}
+
+func (l *LogrusEntry)WithFields(fields Fields)(*LogrusEntry){
+	return &LogrusEntry{l.Entry.WithFields(fields)}
 }
 
 func Unwrap(l logger.BasicLogger)(*LogrusWrapper){

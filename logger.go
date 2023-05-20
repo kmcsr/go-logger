@@ -2,7 +2,12 @@
 package logger
 
 import (
+	"compress/gzip"
+	"errors"
+	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 )
 
 type (
@@ -88,5 +93,78 @@ func Unwrap(l BasicLogger)(v any){
 		return u.Unwrap()
 	}
 	return l
+}
+
+func fileExist(filename string)(bool){
+	if _, err := os.Stat(filename); err != nil {
+		return errors.Is(err, os.ErrExist)
+	}
+	return true
+}
+
+func copyLogToGzip(filename string, r io.Reader)(err error){
+	t := filename + ".2.gz"
+	{
+		i := 2
+		n := t
+		for fileExist(n) {
+			i++
+			n = fmt.Sprintf(filename + ".%d.gz", i)
+		}
+		for i > 2 {
+			i--
+			m := fmt.Sprintf(filename + ".%d.gz", i)
+			if err = os.Rename(m, n); err != nil {
+				return
+			}
+			n = m
+		}
+	}
+	fd, err := os.Create(t)
+	if err != nil {
+		return
+	}
+	defer fd.Close()
+	w := gzip.NewWriter(fd)
+	defer w.Close()
+	_, err = io.Copy(w, r)
+	return
+}
+
+func checkAndMoveLogs(filename string)(err error){
+	if !fileExist(filename) {
+		return
+	}
+	t := filename + ".1"
+	fd, err := os.Open(t)
+	if err == nil {
+		if err = copyLogToGzip(filename, fd); err != nil {
+			return
+		}
+	}else if !errors.Is(err, os.ErrNotExist) {
+		return
+	}
+	return os.Rename(filename, t)
+}
+
+func OutputToFile(l BasicLogger, filename string, outs ...io.Writer)(err error){
+	var out io.Writer
+	if err = checkAndMoveLogs(filename); err != nil {
+		return
+	}
+	dir := filepath.Dir(filename)
+	if !fileExist(dir) {
+		if err = os.MkdirAll(dir, 0755); err != nil {
+			return
+		}
+	}
+	if out, err = os.OpenFile(filename, os.O_RDWR | os.O_CREATE | os.O_EXCL, 0666); err != nil {
+		return
+	}
+	if len(outs) > 0 {
+		out = io.MultiWriter(append(outs, out)...)
+	}
+	l.SetOutput(out)
+	return
 }
 
