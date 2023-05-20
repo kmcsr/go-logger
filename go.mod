@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/kataras/golog v0.1.8
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.2
 )
 
 require (

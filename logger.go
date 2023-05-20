@@ -147,8 +147,7 @@ func checkAndMoveLogs(filename string)(err error){
 	return os.Rename(filename, t)
 }
 
-func OutputToFile(l BasicLogger, filename string, outs ...io.Writer)(err error){
-	var out io.Writer
+func OutputToFile(l BasicLogger, filename string, outs ...io.Writer)(out io.Writer, err error){
 	if err = checkAndMoveLogs(filename); err != nil {
 		return
 	}
@@ -164,7 +163,9 @@ func OutputToFile(l BasicLogger, filename string, outs ...io.Writer)(err error){
 	if len(outs) > 0 {
 		out = io.MultiWriter(append(outs, out)...)
 	}
-	l.SetOutput(out)
+	if l != nil {
+		l.SetOutput(out)
+	}
 	return
 }
 
