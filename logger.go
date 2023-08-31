@@ -11,60 +11,60 @@ import (
 )
 
 type (
-	BasicLogger interface{
+	BasicLogger interface {
 		SetOutput(w io.Writer)
 
 		Print(v ...any)
 		Printf(format string, v ...any)
 	}
-	DebugLogger interface{
+	DebugLogger interface {
 		Debug(v ...any)
 	}
-	DebugfLogger interface{
+	DebugfLogger interface {
 		Debugf(format string, v ...any)
 	}
-	InfoLogger interface{
+	InfoLogger interface {
 		Info(v ...any)
 	}
-	InfofLogger interface{
+	InfofLogger interface {
 		Infof(format string, v ...any)
 	}
-	WarnLogger interface{
+	WarnLogger interface {
 		Warn(v ...any)
 	}
-	WarnfLogger interface{
+	WarnfLogger interface {
 		Warnf(format string, v ...any)
 	}
-	ErrorLogger interface{
+	ErrorLogger interface {
 		Error(v ...any)
 	}
-	ErrorfLogger interface{
+	ErrorfLogger interface {
 		Errorf(format string, v ...any)
 	}
-	TraceLogger interface{
+	TraceLogger interface {
 		Trace(v ...any)
 	}
-	TracefLogger interface{
+	TracefLogger interface {
 		Tracef(format string, v ...any)
 	}
-	FatalLogger interface{
+	FatalLogger interface {
 		Fatal(v ...any)
 	}
-	FatalfLogger interface{
+	FatalfLogger interface {
 		Fatalf(format string, v ...any)
 	}
-	PanicLogger interface{
+	PanicLogger interface {
 		Panic(v ...any)
 	}
-	PanicfLogger interface{
+	PanicfLogger interface {
 		Panicf(format string, v ...any)
 	}
-	LevelsLogger interface{
+	LevelsLogger interface {
 		SetLevel(Level)
 		Level()(Level)
 	}
 
-	Logger interface{
+	Logger interface {
 		BasicLogger
 		DebugLogger
 		DebugfLogger
@@ -93,6 +93,28 @@ func Unwrap(l BasicLogger)(v any){
 		return u.Unwrap()
 	}
 	return l
+}
+
+func OutputToFile(l BasicLogger, filename string, outs ...io.Writer)(out io.Writer, err error){
+	if err = checkAndMoveLogs(filename); err != nil {
+		return
+	}
+	dir := filepath.Dir(filename)
+	if !fileExist(dir) {
+		if err = os.MkdirAll(dir, 0755); err != nil {
+			return
+		}
+	}
+	if out, err = os.OpenFile(filename, os.O_RDWR | os.O_CREATE | os.O_EXCL, 0666); err != nil {
+		return
+	}
+	if len(outs) > 0 {
+		out = io.MultiWriter(append(outs, out)...)
+	}
+	if l != nil {
+		l.SetOutput(out)
+	}
+	return
 }
 
 func fileExist(filename string)(bool){
@@ -146,26 +168,3 @@ func checkAndMoveLogs(filename string)(err error){
 	}
 	return os.Rename(filename, t)
 }
-
-func OutputToFile(l BasicLogger, filename string, outs ...io.Writer)(out io.Writer, err error){
-	if err = checkAndMoveLogs(filename); err != nil {
-		return
-	}
-	dir := filepath.Dir(filename)
-	if !fileExist(dir) {
-		if err = os.MkdirAll(dir, 0755); err != nil {
-			return
-		}
-	}
-	if out, err = os.OpenFile(filename, os.O_RDWR | os.O_CREATE | os.O_EXCL, 0666); err != nil {
-		return
-	}
-	if len(outs) > 0 {
-		out = io.MultiWriter(append(outs, out)...)
-	}
-	if l != nil {
-		l.SetOutput(out)
-	}
-	return
-}
-
